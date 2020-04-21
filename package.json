@@ -1,0 +1,27 @@
+{
+  "name": "raspberry-eink-terminal",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "node-gyp rebuild"
+  },
+  "gypfile": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neolao/raspberry-eink-terminal.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/neolao/raspberry-eink-terminal/issues"
+  },
+  "homepage": "https://github.com/neolao/raspberry-eink-terminal#readme",
+  "dependencies": {
+    "node-gd": "^2.0.0"
+  }
+}
