@@ -71,7 +71,7 @@ void SendData(unsigned char data) {
 
 void WaitUntilIdle(void) {
     while(EpdIf::DigitalRead(BUSY_PIN) == 0) {      //0: busy, 1: idle
-        EpdIf::DelayMs(100);
+        EpdIf::DelayMs(10);
     }
 }
 
@@ -157,7 +157,7 @@ void displayFrameBuffer( unsigned char* frame_buffer) {
     }
 
     SendCommand(DISPLAY_REFRESH);
-    EpdIf::DelayMs(100);
+    //EpdIf::DelayMs(100);
     WaitUntilIdle();
 }
 
