@@ -28,12 +28,20 @@ using v8::Value;
 #define DATA_START_TRANSMISSION_1                   0x10
 #define DATA_STOP                                   0x11
 #define DISPLAY_REFRESH                             0x12
+#define DATA_START_TRANSMISSION_2                   0x13
 #define IMAGE_PROCESS                               0x13
 #define LUT_FOR_VCOM                                0x20
+
+#define LUT_WHITE_TO_WHITE                          0x21
+#define LUT_BLACK_TO_WHITE                          0x22
+#define LUT_WHITE_TO_BLACK                          0x23
+#define LUT_BLACK_TO_BLACK                          0x24
+
 #define LUT_BLUE                                    0x21
 #define LUT_WHITE                                   0x22
 #define LUT_GRAY_1                                  0x23
 #define LUT_GRAY_2                                  0x24
+
 #define LUT_RED_0                                   0x25
 #define LUT_RED_1                                   0x26
 #define LUT_RED_2                                   0x27
@@ -54,24 +62,130 @@ using v8::Value;
 #define AUTO_MEASUREMENT_VCOM                       0x80
 #define READ_VCOM_VALUE                             0x81
 #define VCM_DC_SETTING                              0x82
+#define PARTIAL_WINDOW                              0x90
+#define PARTIAL_IN                                  0x91
+#define PARTIAL_OUT                                 0x92
+
+const unsigned char lut_vcom0[] =
+{
+0x40, 0x17, 0x00, 0x00, 0x00, 0x02,
+0x00, 0x17, 0x17, 0x00, 0x00, 0x02,
+0x00, 0x0A, 0x01, 0x00, 0x00, 0x01,
+0x00, 0x0E, 0x0E, 0x00, 0x00, 0x02,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+const unsigned char lut_vcom0_quick[] =
+{
+0x00, 0x0E, 0x00, 0x00, 0x00, 0x01,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+const unsigned char lut_ww[] ={
+0x40, 0x17, 0x00, 0x00, 0x00, 0x02,
+0x90, 0x17, 0x17, 0x00, 0x00, 0x02,
+0x40, 0x0A, 0x01, 0x00, 0x00, 0x01,
+0xA0, 0x0E, 0x0E, 0x00, 0x00, 0x02,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+const unsigned char lut_ww_quick[] ={
+0xA0, 0x0E, 0x00, 0x00, 0x00, 0x01,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+
+const unsigned char lut_bw[] ={
+0x40, 0x17, 0x00, 0x00, 0x00, 0x02,
+0x90, 0x17, 0x17, 0x00, 0x00, 0x02,
+0x40, 0x0A, 0x01, 0x00, 0x00, 0x01,
+0xA0, 0x0E, 0x0E, 0x00, 0x00, 0x02,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+const unsigned char lut_bw_quick[] ={
+0xA0, 0x0E, 0x00, 0x00, 0x00, 0x01,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+const unsigned char lut_bb[] ={
+0x80, 0x17, 0x00, 0x00, 0x00, 0x02,
+0x90, 0x17, 0x17, 0x00, 0x00, 0x02,
+0x80, 0x0A, 0x01, 0x00, 0x00, 0x01,
+0x50, 0x0E, 0x0E, 0x00, 0x00, 0x02,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+const unsigned char lut_bb_quick[] ={
+0x50, 0x0E, 0x00, 0x00, 0x00, 0x01,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+const unsigned char lut_wb[] ={
+0x80, 0x17, 0x00, 0x00, 0x00, 0x02,
+0x90, 0x17, 0x17, 0x00, 0x00, 0x02,
+0x80, 0x0A, 0x01, 0x00, 0x00, 0x01,
+0x50, 0x0E, 0x0E, 0x00, 0x00, 0x02,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+const unsigned char lut_wb_quick[] ={
+0x50, 0x0E, 0x00, 0x00, 0x00, 0x01,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
 
 void SendCommand(unsigned char command) {
     EpdIf::DigitalWrite(DC_PIN, LOW);
-    EpdIf::DigitalWrite(CS_PIN, LOW);
+    //EpdIf::DigitalWrite(CS_PIN, LOW);
     EpdIf::SpiTransfer(command);
-    EpdIf::DigitalWrite(CS_PIN, HIGH);
+    //EpdIf::DigitalWrite(CS_PIN, HIGH);
 }
 void SendData(unsigned char data) {
     EpdIf::DigitalWrite(DC_PIN, HIGH);
-    EpdIf::DigitalWrite(CS_PIN, LOW);
+    //EpdIf::DigitalWrite(CS_PIN, LOW);
     EpdIf::SpiTransfer(data);
-    EpdIf::DigitalWrite(CS_PIN, HIGH);
+    //EpdIf::DigitalWrite(CS_PIN, HIGH);
 }
 
 
 void WaitUntilIdle(void) {
     while(EpdIf::DigitalRead(BUSY_PIN) == 0) {      //0: busy, 1: idle
-        EpdIf::DelayMs(10);
+        EpdIf::DelayMs(1);
     }
 }
 
@@ -143,7 +257,7 @@ void clear(const FunctionCallbackInfo<Value>& args) {
 
     SendCommand(DISPLAY_REFRESH);
 
-    EpdIf::DelayMs(100);
+    //EpdIf::DelayMs(100);
     WaitUntilIdle();
 
     args.GetReturnValue().Set(1);
@@ -156,9 +270,9 @@ void displayFrameBuffer( unsigned char* frame_buffer) {
         SendData(frame_buffer[i]);
     }
 
-    SendCommand(DISPLAY_REFRESH);
+    //SendCommand(DISPLAY_REFRESH);
     //EpdIf::DelayMs(100);
-    WaitUntilIdle();
+    //WaitUntilIdle();
 }
 
 
@@ -172,14 +286,122 @@ void display(const FunctionCallbackInfo<Value>& args) {
     displayFrameBuffer(imagedata);
 }
 
+void refresh(const FunctionCallbackInfo<Value>& args) {
+    SendCommand(DISPLAY_REFRESH);
+}
 
+void waitUntilIdle(const FunctionCallbackInfo<Value>& args) {
+    WaitUntilIdle();
+}
 
+void setLutQuick(const FunctionCallbackInfo<Value>& args) {
+    unsigned int count;
+    SendCommand(LUT_FOR_VCOM);                            //vcom
+    for(count = 0; count < 44; count++) {
+        SendData(lut_vcom0_quick[count]);
+    }
 
+    SendCommand(LUT_WHITE_TO_WHITE);                      //ww --
+    for(count = 0; count < 42; count++) {
+        SendData(lut_ww_quick[count]);
+    }
+
+    SendCommand(LUT_BLACK_TO_WHITE);                      //bw r
+    for(count = 0; count < 42; count++) {
+        SendData(lut_bw_quick[count]);
+    }
+
+    SendCommand(LUT_WHITE_TO_BLACK);                      //wb w
+    for(count = 0; count < 42; count++) {
+        SendData(lut_wb_quick[count]);
+    }
+
+    SendCommand(LUT_BLACK_TO_BLACK);                      //bb b
+    for(count = 0; count < 42; count++) {
+        SendData(lut_bb_quick[count]);
+    }
+}
+
+void setPartialWindow(const FunctionCallbackInfo<Value>& args) {
+    Isolate* isolate = args.GetIsolate();
+
+    v8::Local<v8::Uint8Array> view = args[0].As<v8::Uint8Array>();
+    void *data = view->Buffer()->GetContents().Data();
+
+    unsigned char* imagedata = static_cast<unsigned char*>(data);
+
+    int32_t x = args[1]->Int32Value(isolate->GetCurrentContext()).ToChecked();
+    int32_t y = args[2]->Int32Value(isolate->GetCurrentContext()).ToChecked();
+    int32_t width = args[3]->Int32Value(isolate->GetCurrentContext()).ToChecked();
+    int32_t height = args[4]->Int32Value(isolate->GetCurrentContext()).ToChecked();
+
+    //std::cout << "width: " << std::to_string(width) << std::endl;
+    //std::cout << "height: " << std::to_string(height) << std::endl;
+
+    SendCommand(PARTIAL_IN);
+    SendCommand(PARTIAL_WINDOW);
+    SendData(x >> 8);
+    SendData(x & 0xf8);     // x should be the multiple of 8, the last 3 bit will always be ignored
+    SendData(((x & 0xf8) + width  - 1) >> 8);
+    SendData(((x & 0xf8) + width  - 1) | 0x07);
+    SendData(y >> 8);
+    SendData(y & 0xff);
+    SendData((y + height - 1) >> 8);
+    SendData((y + height - 1) & 0xff);
+    SendData(0x01);         // Gates scan both inside and outside of the partial window. (default)
+    // DelayMs(2);
+    //EpdIf::DelayMs(2);
+    SendCommand(DATA_START_TRANSMISSION_2);
+    for(int i = 0; i < width * height / 8; i++) {
+        SendData(imagedata[i]);
+    }
+
+    //for(int i = 0; i < width  / 8 * height; i++) {
+    //    SendData(0x00);
+    //}
+
+    //EpdIf::DelayMs(2);
+    SendCommand(PARTIAL_OUT);
+}
+
+/**
+ *  @brief: transmit partial data to the SRAM.  The final parameter chooses between dtm=1 and dtm=2
+ */
+void EPDSetPartialWindow(const unsigned char* buffer_black, int x, int y, int w, int l, int dtm) {
+    SendCommand(PARTIAL_IN);
+    SendCommand(PARTIAL_WINDOW);
+    SendData(x >> 8);
+    SendData(x & 0xf8);     // x should be the multiple of 8, the last 3 bit will always be ignored
+    SendData(((x & 0xf8) + w  - 1) >> 8);
+    SendData(((x & 0xf8) + w  - 1) | 0x07);
+    SendData(y >> 8);
+    SendData(y & 0xff);
+    SendData((y + l - 1) >> 8);
+    SendData((y + l - 1) & 0xff);
+    SendData(0x01);         // Gates scan both inside and outside of the partial window. (default)
+    // DelayMs(2);
+    SendCommand((dtm == 1) ? DATA_START_TRANSMISSION_1 : DATA_START_TRANSMISSION_2);
+    if (buffer_black != NULL) {
+        for(int i = 0; i < w  / 8 * l; i++) {
+            SendData(buffer_black[i]);
+        }
+    } else {
+        for(int i = 0; i < w  / 8 * l; i++) {
+            SendData(0x00);
+        }
+    }
+    // DelayMs(2);
+    SendCommand(PARTIAL_OUT);
+}
 
 void InitAll(Local<Object> exports) {
   NODE_SET_METHOD(exports, "init", init);
   NODE_SET_METHOD(exports, "display", display);
   NODE_SET_METHOD(exports, "clear", clear);
+  NODE_SET_METHOD(exports, "refresh", refresh);
+  NODE_SET_METHOD(exports, "waitUntilIdle", waitUntilIdle);
+  NODE_SET_METHOD(exports, "setLutQuick", setLutQuick);
+  NODE_SET_METHOD(exports, "setPartialWindow", setPartialWindow);
 }
 
 NODE_MODULE(epd7x5, InitAll)
